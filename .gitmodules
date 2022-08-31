@@ -1,0 +1,3 @@
+[submodule "lp_saucy"]
+	path = lp_saucy
+	url = git@github.com:x6A646C73/lp_saucy.git
