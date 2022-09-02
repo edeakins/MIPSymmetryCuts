@@ -1,3 +1,12 @@
 [submodule "lp_saucy"]
 	path = lp_saucy
 	url = git@github.com:x6A646C73/lp_saucy.git
+[submodule "CoinUtils"]
+	path = CoinUtils
+	url = git@github.com:coin-or/CoinUtils.git
+[submodule "Data-Sample"]
+	path = Data-Sample
+	url = git@github.com:coin-or-tools/Data-Sample.git
+[submodule "ThirdParty-Glpk"]
+	path = ThirdParty-Glpk
+	url = git@github.com:coin-or-tools/ThirdParty-Glpk.git
