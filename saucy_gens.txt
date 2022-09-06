@@ -1,0 +1,10 @@
+Coin0001I At line 1 NAME
+Coin0001I At line 2 ROWS
+Coin0001I At line 13 COLUMNS
+Coin0001I At line 68 RHS
+Coin0001I At line 78 BOUNDS
+Coin0001I At line 88 ENDATA
+Coin0002I Problem no_name has 9 rows, 9 columns and 45 elements
+(x1 x2)(x4 x5)(x7 x8)(R1 R2)(R4 R5)(R7 R8)
+(x0 x5)(x1 x8)(x4 x6)(R0 R5)(R1 R8)(R4 R6)
+(x0 x4)(x1 x3)(x2 x5)(x6 x7)(R0 R4)(R1 R3)(R2 R5)(R6 R7)

@@ -1,0 +1,32 @@
+# Driver code
+DRIVER = generateMIPCuts
+EPENG = EquitablePartition
+AGGENG = Aggregate
+
+EXE = $(DRIVER)
+
+SRCDIR = .
+# the compiler: gcc for C program, define as g++ for C++
+CXX = g++ --std=c++11
+#CXXLINKFLAGS =  -Wl,-rpath -Wl,/usr/local/Cellar/clp/1.17.3/lib,/usr/local/Cellar/coinutils/2.11.3/lib,/usr/local/Cellar/osi/0.108.5/lib,/usr/local/Cellar/cgl/0.60.2/lib
+CXXFLAGS = -g -O0 -pipe -pedantic-errors -Wparentheses -Wreturn-type -Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -Wno-unknown-pragmas -Wno-long-long   -DCLP_BUILD
+
+# compiler flags:
+#  -g     - this flag adds debugging information to the executable file
+#  -Wall  - this flag is used to turn on most compiler warnings
+
+INC = -I/usr/local/Cellar/clp/1.17.3/include/clp/coin -I/usr/local/Cellar/coinutils/2.11.3/include/coinutils/coin -I/usr/local/Cellar/osi/0.108.5/include/osi/coin -I/usr/local/Cellar/cgl/0.60.2/include/cgl/coin  -I./
+LIB = -L/usr/local/Cellar/clp/1.17.3/lib -lClpSolver -lClp -lOsiClp -L/usr/local/Cellar/coinutils/2.11.3/lib -lCoinUtils -L/usr/local/Cellar/osi/0.108.5/lib -lOsi  -I/usr/local/Cellar/cgl/0.60.2/lib -lCgl.1.10.2 -lz -lm 
+
+# The build target 
+
+all: $(EXE)
+
+$(EXE): $(DRIVER).cpp
+	$(CXX) $(CXXFLAGS) $(CXXLINKFLAGS) $(INC) -o $(EXE) $(DRIVER).cpp $(EPENG).cpp $(AGGENG).cpp $(LIB) $(ADDLIBS)
+
+clean:
+	rm -rf generateMIPCuts
+
+# $(TARGET): $(TARGET).c
+#     $(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
