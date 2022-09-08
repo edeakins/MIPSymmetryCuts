@@ -2,12 +2,14 @@
 #define AGGREGATE_H_
 
 #include "EquitablePartition.hpp"
+#include "orbital_partition.hpp"
+#include "linear_program.hpp"
 #include <limits>
 
-class AggregateLp{
+class Aggregate_lp{
 public:
-    AggregateLp(EquitablePartition& ep);
-    void updateMasterLpAndEp(EquitablePartition& ep, int _nC, int _nR,
+    Aggregate_lp(orbital_partition& op, linear_program& lp);
+    void updateMasterLpAndEp(orbital_partition& op, int _nC, int _nR,
                             int _nnz, vector<int>& As, vector<int>& Ai,
                             vector<double>& Av, vector<double>& rL, vector<double>& rU);
     void clear();
@@ -33,6 +35,9 @@ public:
     vector<double>& getAvalue();
     vector<int>& getAindex();
     vector<int>& getAstart();
+
+    // Orbital partition container
+    orbital_partition orbits;
 
     // Infinity
     const double inf = std::numeric_limits<double>::max();

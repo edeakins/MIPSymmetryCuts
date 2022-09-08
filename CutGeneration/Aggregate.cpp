@@ -1,30 +1,32 @@
 #include "Aggregate.hpp"
 
-AggregateLp::AggregateLp(EquitablePartition& ep){
+Aggregate_lp::Aggregate_lp(orbital_partition& op, linear_program& lp){
+    // Orbital partition info
+    orbits = op;
     // Original Lp info
-    nRows = ep.nRows;
+    nRows = lp.num_row;
     _nRows = nRows;
-	nCols = ep.nCols;
+	nCols = lp.num_col;
     _nCols = nCols;
 	numTot = nRows + nCols;
     _numTot = numTot;
-	colCost.assign(ep.colCost.begin(), ep.colCost.end());
-    colLower.assign(ep.colLower.begin(), ep.colLower.end());
-    colUpper.assign(ep.colUpper.begin(), ep.colUpper.end());
-    rowLower.assign(ep.rowLower.begin(), ep.rowLower.end());
-    rowUpper.assign(ep.rowUpper.begin(), ep.rowUpper.end());
-    Avalue.assign(ep.Avalue.begin(), ep.Avalue.end());
-    Aindex.assign(ep.Aindex.begin(), ep.Aindex.end());
-    AindexP.assign(ep.AindexP.begin(), ep.AindexP.end());
-    Astart.assign(ep.Astart.begin(), ep.Astart.end());
+	colCost.assign(lp.col_cost.begin(), lp.col_cost.end());
+    colLower.assign(lp.col_lower.begin(), lp.col_lower.end());
+    colUpper.assign(lp.col_upper.begin(), lp.col_upper.end());
+    rowLower.assign(lp.row_lower.begin(), lp.row_lower.end());
+    rowUpper.assign(lp.row_upper.begin(), lp.row_upper.end());
+    Avalue.assign(lp.a_value.begin(), lp.a_value.end());
+    Aindex.assign(lp.a_index.begin(), lp.a_index.end());
+    // AindexP.assign(lp.a_indexP.begin(), lp.AindexP.end());
+    Astart.assign(lp.a_start.begin(), lp.a_start.end());
 
-    // EP info
-    C.assign(ep.C.begin(), ep.C.end());
-    Csize.assign(ep.Csize.begin(), ep.Csize.end());
-    color.assign(ep.color.begin(), ep.color.end());
+    // // EP info
+    // C.assign(ep.C.begin(), ep.C.end());
+    // Csize.assign(ep.Csize.begin(), ep.Csize.end());
+    // color.assign(ep.color.begin(), ep.color.end());
 }
 
-void AggregateLp::updateMasterLpAndEp(EquitablePartition& ep, int _nC, int _nR,
+void Aggregate_lp::updateMasterLpAndEp(orbital_partition& op, int _nC, int _nR,
                             int _nnz, vector<int>& As, vector<int>& Ai,
                             vector<double>& Av, vector<double>& rL, vector<double>& rU){
    // update original Lp info
@@ -36,34 +38,36 @@ void AggregateLp::updateMasterLpAndEp(EquitablePartition& ep, int _nC, int _nR,
     _Avalue.assign(Av.begin(), Av.end());
     _Aindex.assign(Ai.begin(), Ai.end());
     _Astart.assign(As.begin(), As.end());
-
-    // update EP info
-    C.assign(ep.C.begin(), ep.C.end());
-    Csize.assign(ep.Csize.begin(), ep.Csize.end());
-    color.assign(ep.color.begin(), ep.color.end());
-    AindexP.assign(ep.AindexP.begin(), ep.AindexP.end());
-    parentPartition.assign(ep.parentPartition.begin(), ep.parentPartition.end());
+    // // update EP info
+    // C.assign(ep.C.begin(), ep.C.end());
+    // Csize.assign(ep.Csize.begin(), ep.Csize.end());
+    // color.assign(ep.color.begin(), ep.color.end());
+    // AindexP.assign(ep.AindexP.begin(), ep.AindexP.end());
+    // parentPartition.assign(ep.parentPartition.begin(), ep.parentPartition.end());
 }
 
-void AggregateLp::clear(){
+void Aggregate_lp::clear(){
     Avalue_.clear();
     Astart_.clear();
     Aindex_.clear();
 }
 
-void AggregateLp::findDimensions(){
-    for (int i = tempNCols_; i < nCols; ++i)
-        if (Csize[i])
+void Aggregate_lp::findDimensions(){
+    int i_part, el, el_idx;
+    for (i_part = 0; i_part < orbits.orbit_start.size() - 1; ++i_part){
+        el_idx = orbits.orbit_start.at(i_part);
+        el = orbits.element.at(el_idx);
+        if (el < _nCols)
             nCols_++;
-    for (int i = tempNRows_; i < nRows; ++i)
-        if (Csize[i + nCols])
+        else
             nRows_++;
+    }
     colLower_.resize(nCols_);
     colUpper_.resize(nCols_);
     colCost_.resize(nCols_); 
 }
 
-void AggregateLp::pairCutWithIndex(){
+void Aggregate_lp::pairCutWithIndex(){
     cut.clear();
     cutIdx.clear();
     nCuts = nRows_;
@@ -71,10 +75,12 @@ void AggregateLp::pairCutWithIndex(){
     int finish = _nRows;
     for (int i = start; i < finish; ++i){
         cutIdx[i] = nCuts++;
-    } 
+    }
+    rowLower_.resize(nCuts);
+    rowUpper_.resize(nCuts); 
 }
 
-void AggregateLp::pairOrderConstraintWithIndex(){
+void Aggregate_lp::pairOrderConstraintWithIndex(){
     orderConstraintIdx.clear();
     nOrdConstraints = nCuts;
     int orderIdx = 0;
@@ -85,27 +91,29 @@ void AggregateLp::pairOrderConstraintWithIndex(){
     rowUpper_.resize(nOrdConstraints);
 }
 
-void AggregateLp::aggregateColBounds(){
+void Aggregate_lp::aggregateColBounds(){
     for (int i = 0; i < nCols_; ++i){
-        int rep = C[i].front();
-        int orbitSize = Csize[color[rep]];
-        colLower_[i] = colLower[rep] * orbitSize;
-        colUpper_[i] = colUpper[rep] * orbitSize;
+        int el_idx = orbits.orbit_start.at(i);
+        int el = orbits.element.at(el_idx);
+        int orbitSize = orbits.orbit_start.at(i + 1) - el_idx;
+        colLower_[i] = colLower[el] * orbitSize;
+        colUpper_[i] = colUpper[el] * orbitSize;
     }
 }
 
-void AggregateLp::aggregateRowBounds(){
+void Aggregate_lp::aggregateRowBounds(){
     for (int i = 0; i < nRows_; ++i){
-        int rep = C[i + nCols].front() - nCols;
-        int orbitSize = Csize[color[rep + nCols]];
-        if (rowLower[rep] == inf)
+        int el_idx = orbits.orbit_start.at(i + nCols_);
+        int el = orbits.element.at(el_idx) - nCols;
+        int orbitSize = orbits.orbit_start.at(i + nCols_ + 1) - el_idx;
+        if (rowLower[el] == inf)
             rowLower_[i] = inf;
         else
-            rowLower_[i] = rowLower[rep] * orbitSize;
-        if (rowUpper[rep] == inf)
+            rowLower_[i] = rowLower[el] * orbitSize;
+        if (rowUpper[el] == inf)
             rowUpper_[i] = inf;
         else
-            rowUpper_[i] = rowUpper[rep] * orbitSize;
+            rowUpper_[i] = rowUpper[el] * orbitSize;
     }
     for (int i = nRows_; i < nCuts; ++i){
         if (_rowLower[i - nRows_ + nRows] == inf)
@@ -131,13 +139,15 @@ void AggregateLp::aggregateRowBounds(){
     }
 }
 
-void AggregateLp::aggregateAMatrix(){
+void Aggregate_lp::aggregateAMatrix(){
 	Astart_.push_back(0);
 	for (int i = 0; i < nCols_; ++i){
-        int rep = C[i].front();
+        int el_idx = orbits.orbit_start.at(i);
+        int el = orbits.element.at(el_idx);
         vector<double> coeff(nRows_, 0);
-        for (int j = Astart[rep]; j < Astart[rep + 1]; ++j){
-            int rowIdx = AindexP[j] - nCols;
+        for (int j = Astart[el]; j < Astart[el + 1]; ++j){
+            int a_idx = Aindex.at(j);
+            int rowIdx = orbits.orbit.at(a_idx + nCols) - nCols_;
             coeff[rowIdx] += Avalue[j];
         }
         for (int j = 0; j < coeff.size(); ++j){
@@ -150,7 +160,7 @@ void AggregateLp::aggregateAMatrix(){
 	}
 }
 
-void AggregateLp::addCutsToAggregate(){
+void Aggregate_lp::addCutsToAggregate(){
     if (!_Astart.size())
         return;
     for (int i = 0; i < nCols_; ++i){
@@ -172,7 +182,7 @@ void AggregateLp::addCutsToAggregate(){
     }
 }
 
-void AggregateLp::addOrderConstraints(){
+void Aggregate_lp::addOrderConstraints(){
     if (!_Astart.size()) return;
     int orderIdx = 0;
     for (int i  = 0; i < parentPartition.size(); ++i){
@@ -200,73 +210,74 @@ void AggregateLp::addOrderConstraints(){
     }
 }
 
-void AggregateLp::aggregateCostVector(){
+void Aggregate_lp::aggregateCostVector(){
     colCost_.assign(nCols_, 0);
 	for (int i = 0; i < nCols_; ++i){
-        int rep = C[i].front();
-        colCost_[i] = colCost[rep];
+        int el_idx = orbits.orbit_start.at(i);
+        int el = orbits.element.at(el_idx);
+        colCost_[i] = colCost[el];
     }
 }
 
-void AggregateLp::aggregate(){
+void Aggregate_lp::aggregate(){
     clear();
     findDimensions();
     pairCutWithIndex();
-    pairOrderConstraintWithIndex();
+    // pairOrderConstraintWithIndex();
     aggregateColBounds();
     aggregateRowBounds();
     aggregateAMatrix();
     addCutsToAggregate();
-    addOrderConstraints();
+    // addOrderConstraints();
     aggregateCostVector();
     tempNCols_ = nCols_;
     tempNRows_ = nRows_;
 }
 
-int AggregateLp::getNumCol(){
+int Aggregate_lp::getNumCol(){
     return nCols_;
 }
 
-int AggregateLp::getNumRowAfterCuts(){
+int Aggregate_lp::getNumRowAfterCuts(){
     if (!_Astart.size()) return nRows_;
     return nCuts;
 }
-int AggregateLp::getNumRowAfterOrderConstraints(){
+int Aggregate_lp::getNumRowAfterOrderConstraints(){
     if (!_Astart.size()) return nRows_;
     return nOrdConstraints;
 }
 
-int AggregateLp::getNumRow(){
+int Aggregate_lp::getNumRow(){
     return nRows_;
 }
 
-vector<double>& AggregateLp::getColUpper(){
+vector<double>& Aggregate_lp::getColUpper(){
     return colUpper_;
 }
 
-vector<double>& AggregateLp::getColLower(){
+vector<double>& Aggregate_lp::getColLower(){
     return colLower_;
 }
 
-vector<double>& AggregateLp::getColCost(){
+vector<double>& Aggregate_lp::getColCost(){
     return colCost_;
 }
 
-vector<double>& AggregateLp::getRowUpper(){
+vector<double>& Aggregate_lp::getRowUpper(){
     return rowUpper_;
 }
 
-vector<double>& AggregateLp::getRowLower(){
+vector<double>& Aggregate_lp::getRowLower(){
     return rowLower_;
 }
-vector<double>& AggregateLp::getAvalue(){
+vector<double>& Aggregate_lp::getAvalue(){
     return Avalue_;
 }
 
-vector<int>& AggregateLp::getAindex(){
+vector<int>& Aggregate_lp::getAindex(){
     return Aindex_;
 }   
 
-vector<int>& AggregateLp::getAstart(){
+vector<int>& Aggregate_lp::getAstart(){
     return Astart_;
 }

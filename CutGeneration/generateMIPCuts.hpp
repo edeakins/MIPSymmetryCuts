@@ -8,8 +8,10 @@
 #include "CoinBuild.hpp"
 #include "CoinModel.hpp"
 #include "OsiCuts.hpp"
+#include "OsiPresolve.hpp"
 #include "OsiClpSolverInterface.hpp"
 #include "OsiSolverInterface.hpp"
+#include "OsiSolverParameters.hpp"
 #include "CoinWarmStartBasis.hpp"
 // Combinatorial cuts
 #include "CglAllDifferent.hpp"
@@ -42,6 +44,8 @@
 // Color refinement and aggregation 
 #include "EquitablePartition.hpp"
 #include "Aggregate.hpp"
+#include "read_orbits.hpp"
+// #include
 
 #include <iomanip>
 #include <cassert>
