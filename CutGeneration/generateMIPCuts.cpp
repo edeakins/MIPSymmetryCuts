@@ -27,7 +27,11 @@ void update(OsiClpSolverInterface& aggSi, OsiClpSolverInterface& si, orbital_par
                                 aggSi.getMatrixByRow()->getVectorStarts() + aggSi.getNumRows() + 1); 
     int offset = ARstartAgg.at(0);
     ofstream write_cuts("./CutGeneration/cut_txt_files/cuts.txt");
-    for (int i = 0; i < nCutsAdded; ++i){
+    // int iter = std::ceil(nCutsAdded/2.0);
+    int iter = 10; 
+    if (nCutsAdded < 10) iter = nCutsAdded;
+    for (int i = 0; i < iter; ++i){
+    // for (int i = 0; i < 1; ++i){
         double rhs = rowRhsAgg[i];
         double lb = rowLowerAgg[i];
         double ub = rowUpperAgg[i];
@@ -90,6 +94,7 @@ int main(int argc, const char *argv[]){
     CglGomory gomoryCuts;
     CglGMI gmiCuts;
     CglTwomir twomirCuts;
+    CglZeroHalf zeroHalf;
     CglMixedIntegerRounding mIRoundingCuts;
     OsiCuts cuts;
     OsiSolverInterface::ApplyCutsReturnCode acRc;
@@ -154,7 +159,7 @@ int main(int argc, const char *argv[]){
     aggSi.initialSolve();
     double obj = aggSi.getObjValue();
     cuts = OsiCuts();
-    gomoryCuts.generateCuts(aggSi, cuts);
+    gmiCuts.generateCuts(aggSi, cuts);
     acRc = aggSi.applyCuts(cuts, 0.0);
     cout << cuts.sizeCuts() << " cuts were generated" <<endl;
     // aggSi.writeLp("./CutGeneration/aggregate_lps_with_cuts/agg_after_cuts");

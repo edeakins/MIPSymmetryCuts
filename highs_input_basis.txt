@@ -1,0 +1,6 @@
+HiGHS v1
+Valid
+# Columns 1
+0
+# Rows 1
+1
