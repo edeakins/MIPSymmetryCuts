@@ -1,0 +1,22 @@
+Running HiGHS 1.2.1 [date: 2022-10-12, git hash: n/a]
+Copyright (c) 2022 ERGO-Code under MIT licence terms
+LP   has 18 rows; 12 cols; 108 nonzeros
+Solving LP with Orbital Crossover
+Using Orbital Crossover
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0526315789e+00 Pr: 0(0) 0s
+          3     2.0526315789e+00 Pr: 0(0) 0s
+Model   status      : Optimal
+OC Major   iterations: 1
+OC Minor   iterations: 3
+Objective value     :  2.0526315789e+00
+HiGHS run time      :          0.00
+Solving LP without presolve or with basis
+Using EKK dual simplex solver - serial
+  Iteration        Objective     Infeasibilities num(sum)
+          0     2.0526372405e+00 Pr: 11(3.21053); Du: 0(5.52842e-08) 0s
+          5     2.1111111111e+00 Pr: 0(0) 0s
+Model   status      : Optimal
+Simplex   iterations: 5
+Objective value     :  2.1111111111e+00
+HiGHS run time      :          0.00

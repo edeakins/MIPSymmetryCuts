@@ -1,6 +1,6 @@
 HiGHS v1
 Valid
-# Columns 1
-0
-# Rows 1
-1
+# Columns 12
+1 1 1 1 1 1 1 1 1 0 0 0
+# Rows 18
+0 0 1 0 1 1 1 1 1 1 0 1 1 0 0 0 0 0
