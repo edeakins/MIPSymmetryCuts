@@ -1,43 +1,18 @@
 Columns
     Index Status        Lower        Upper       Primal         Dual
-        0     BS            0            1     0.222222            0
-        1     LB            0            1            0  3.33067e-16
-        2     BS            0            1     0.444444            0
-        3     BS            0            1     0.222222            0
-        4     BS            0            1     0.444444            0
-        5     BS            0            1     0.222222            0
-        6     BS            0            1     0.222222            0
-        7     BS            0            1     0.222222            0
-        8     BS            0            1     0.111111            0
+        0     BS            0            1           -0            0
+        1     BS            0            4            2            0
+        2     BS            0            4           -0            0
 Rows
     Index Status        Lower        Upper       Primal         Dual
-        0     BS            1          inf      1.11111           -0
-        1     BS            1          inf      1.33333           -0
-        2     BS            1          inf            1           -0
-        3     BS            1          inf      1.33333           -0
-        4     BS            1          inf      1.11111           -0
-        5     BS            1          inf      1.44444           -0
-        6     LB            1          inf            1           -0
-        7     LB            1          inf            1           -0
-        8     BS            1          inf      1.22222           -0
-        9     BS            8          inf      8.44444           -0
-       10     LB            4          inf            4           -0
-       11     BS            8          inf      8.22222           -0
-       12     BS            6          inf      6.11111           -0
-       13     LB            8          inf            8           -0
-       14     LB            9          inf            9           -0
-       15     BS           13          inf      13.3333           -0
-       16     BS            7          inf            7           -0
-       17     BS           15          inf      15.4444           -0
-       18     LB           15          inf           15           -0
-       19     BS           15          inf      15.4444           -0
-       20     BS           17          inf      17.5556           -0
-       21     BS            9          inf      9.11111           -0
-       22     BS           17          inf      17.5556           -0
-       23     BS           11          inf      11.2222           -0
-       24     LB            7          inf            7           -0
-       25     LB           19          inf           19     0.111111
+        0     BS            1          inf            2           -0
+        1     BS            4          inf            4           -0
+        2     LB            4          inf            4           -0
+        3     LB            8          inf            8         0.25
+        4     LB            4          inf            4           -0
+        5     BS            8          inf            8           -0
+        6     BS            6          inf            6           -0
 
 Model status: Optimal
 
-Objective value: 2.1111111111111
+Objective value: 2
