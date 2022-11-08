@@ -2,7 +2,7 @@
 <CPLEXSolution version="1.2">
  <header
    problemName=""
-   objectiveValue="2"
+   objectiveValue="2.1551724137931032"
    solutionTypeValue="1"
    solutionTypeString="basic"
    solutionStatusValue="1"
@@ -10,44 +10,146 @@
    solutionMethodString="dual"
    primalFeasible="1"
    dualFeasible="1"
-   simplexIterations="4"
+   simplexIterations="8"
    writeLevel="1"/>
  <quality
    epRHS="9.9999999999999995e-07"
    epOpt="9.9999999999999995e-07"
    maxPrimalInfeas="0"
    maxDualInfeas="0"
-   maxPrimalResidual="8.8817841970012523e-16"
-   maxDualResidual="4.682702037576182e-17"
-   maxX="1.0000000000000004"
-   maxPi="0.24999999999999997"
-   maxSlack="1"
+   maxPrimalResidual="1.1324274851176597e-14"
+   maxDualResidual="1.8735013540549517e-16"
+   maxX="0.48275862068965514"
+   maxPi="0.017241379310344952"
+   maxSlack="2.2931034482758488"
    maxRedCost="0"
-   kappa="196.77272727272722"/>
+   kappa="609.09587744721057"/>
  <linearConstraints>
-  <constraint name="R0" index="0" status="BS" slack="-1" dual="-0"/>
-  <constraint name="R1" index="1" status="LL" slack="0" dual="2.1973164029039559e-17"/>
-  <constraint name="R2" index="2" status="LL" slack="0" dual="5.6772768304695532e-18"/>
-  <constraint name="R6" index="3" status="BS" slack="-8.8817841970012523e-16" dual="-0"/>
-  <constraint name="R7" index="4" status="BS" slack="-2.2204460492503131e-16" dual="-0"/>
-  <constraint name="R8" index="5" status="LL" slack="0" dual="1.3772653051694655e-17"/>
-  <constraint name="c10" index="6" status="LL" slack="0" dual="0.24999999999999997"/>
-  <constraint name="c11" index="7" status="LL" slack="0" dual="1.3877787807814457e-17"/>
-  <constraint name="c12" index="8" status="BS" slack="-0" dual="-0"/>
-  <constraint name="c10" index="9" status="LL" slack="0" dual="1.6674372320601308e-17"/>
-  <constraint name="c13" index="10" status="BS" slack="-4.4408920985006262e-16" dual="-0"/>
-  <constraint name="c14" index="11" status="BS" slack="-0" dual="-0"/>
-  <constraint name="c15" index="12" status="BS" slack="-4.4408920985006262e-16" dual="-0"/>
+  <constraint name="R0" index="0" status="BS" slack="-0.20689655172413796" dual="-0"/>
+  <constraint name="R1" index="1" status="BS" slack="-0.20689655172413773" dual="-0"/>
+  <constraint name="R2" index="2" status="BS" slack="-0.18965517241379332" dual="-0"/>
+  <constraint name="R6" index="3" status="BS" slack="-0.39655172413793094" dual="-0"/>
+  <constraint name="R7" index="4" status="BS" slack="-0.39655172413793083" dual="-0"/>
+  <constraint name="R8" index="5" status="BS" slack="-0.37931034482758641" dual="-0"/>
+  <constraint name="c10" index="6" status="BS" slack="-0.6206896551724137" dual="-0"/>
+  <constraint name="c11" index="7" status="BS" slack="-0.22413793103448088" dual="-0"/>
+  <constraint name="c14" index="8" status="BS" slack="-0.44827586206896264" dual="-0"/>
+  <constraint name="c15" index="9" status="BS" slack="-0.68965517241379004" dual="-0"/>
+  <constraint name="c17" index="10" status="BS" slack="-0.20689655172413657" dual="-0"/>
+  <constraint name="c18" index="11" status="LL" slack="0" dual="0.017241379310344772"/>
+  <constraint name="c19" index="12" status="BS" slack="-0.46551724137930872" dual="-0"/>
+  <constraint name="c20" index="13" status="BS" slack="-0.37931034482758541" dual="-0"/>
+  <constraint name="c23" index="14" status="BS" slack="-0.75862068965517171" dual="-0"/>
+  <constraint name="c24" index="15" status="BS" slack="-1" dual="-0"/>
+  <constraint name="c26" index="16" status="BS" slack="-0.5172413793103452" dual="-0"/>
+  <constraint name="c27" index="17" status="BS" slack="-0.1551724137931032" dual="-0"/>
+  <constraint name="c28" index="18" status="BS" slack="-0.6206896551724137" dual="-0"/>
+  <constraint name="c20" index="19" status="BS" slack="-0.60344827586206584" dual="-0"/>
+  <constraint name="c21" index="20" status="BS" slack="-1.2241379310344831" dual="-0"/>
+  <constraint name="c22" index="21" status="BS" slack="-1.2241379310344795" dual="-0"/>
+  <constraint name="c23" index="22" status="BS" slack="-1.2068965517241388" dual="-0"/>
+  <constraint name="c24" index="23" status="BS" slack="-1.2068965517241352" dual="-0"/>
+  <constraint name="c25" index="24" status="BS" slack="-1.2068965517241352" dual="-0"/>
+  <constraint name="c26" index="25" status="BS" slack="-0.6206896551724137" dual="-0"/>
+  <constraint name="c27" index="26" status="BS" slack="-0.60344827586206584" dual="-0"/>
+  <constraint name="c28" index="27" status="BS" slack="-0.60344827586206939" dual="-0"/>
+  <constraint name="c29" index="28" status="BS" slack="-1.2241379310344831" dual="-0"/>
+  <constraint name="c30" index="29" status="BS" slack="-0.60344827586206939" dual="-0"/>
+  <constraint name="c31" index="30" status="BS" slack="-0.60344827586206584" dual="-0"/>
+  <constraint name="c32" index="31" status="BS" slack="-0.36206896551723666" dual="-0"/>
+  <constraint name="c33" index="32" status="BS" slack="-0.74137931034482829" dual="-0"/>
+  <constraint name="c34" index="33" status="BS" slack="-0.37931034482758452" dual="-0"/>
+  <constraint name="c35" index="34" status="BS" slack="-0.36206896551724022" dual="-0"/>
+  <constraint name="c36" index="35" status="BS" slack="-0.36206896551724022" dual="-0"/>
+  <constraint name="c37" index="36" status="BS" slack="-0.13793103448275712" dual="-0"/>
+  <constraint name="c38" index="37" status="BS" slack="-0.13793103448275801" dual="-0"/>
+  <constraint name="c39" index="38" status="BS" slack="-0.2758620689655169" dual="-0"/>
+  <constraint name="c40" index="39" status="BS" slack="-0.1551724137931032" dual="-0"/>
+  <constraint name="c41" index="40" status="BS" slack="-0.2931034482758621" dual="-0"/>
+  <constraint name="c42" index="41" status="BS" slack="-0.29310344827586032" dual="-0"/>
+  <constraint name="c43" index="42" status="BS" slack="-0.29310344827586121" dual="-0"/>
+  <constraint name="c44" index="43" status="BS" slack="-0.13793103448275845" dual="-0"/>
+  <constraint name="c45" index="44" status="BS" slack="-0.1379310344827589" dual="-0"/>
+  <constraint name="c46" index="45" status="BS" slack="-0.27586206896551513" dual="-0"/>
+  <constraint name="c47" index="46" status="BS" slack="-0.27586206896551779" dual="-0"/>
+  <constraint name="c48" index="47" status="BS" slack="-0.13793103448275801" dual="-0"/>
+  <constraint name="c49" index="48" status="BS" slack="-0.12068965517241104" dual="-0"/>
+  <constraint name="c50" index="49" status="BS" slack="-0.10344827586206673" dual="-0"/>
+  <constraint name="c51" index="50" status="BS" slack="-0.12068965517241459" dual="-0"/>
+  <constraint name="c52" index="51" status="BS" slack="-0.22413793103448221" dual="-0"/>
+  <constraint name="c53" index="52" status="BS" slack="-0.12068965517241459" dual="-0"/>
+  <constraint name="c54" index="53" status="BS" slack="-1.1379310344827562" dual="-0"/>
+  <constraint name="c55" index="54" status="BS" slack="-2.2931034482758488" dual="-0"/>
+  <constraint name="c56" index="55" status="BS" slack="-1.155172413793097" dual="-0"/>
+  <constraint name="c57" index="56" status="BS" slack="-1.1379310344827545" dual="-0"/>
+  <constraint name="c58" index="57" status="BS" slack="-1.1379310344827536" dual="-0"/>
+  <constraint name="c59" index="58" status="BS" slack="-0.58620689655172065" dual="-0"/>
+  <constraint name="c60" index="59" status="BS" slack="-0.56896551724137279" dual="-0"/>
+  <constraint name="c61" index="60" status="BS" slack="-0.58620689655172065" dual="-0"/>
+  <constraint name="c62" index="61" status="BS" slack="-1.155172413793089" dual="-0"/>
+  <constraint name="c63" index="62" status="BS" slack="-0.58620689655172065" dual="-0"/>
+  <constraint name="c64" index="63" status="LL" slack="0" dual="0.017241379310344952"/>
+  <constraint name="c65" index="64" status="LL" slack="0" dual="0.017241379310344911"/>
+  <constraint name="c66" index="65" status="LL" slack="0" dual="0.0172413793103448"/>
+  <constraint name="c67" index="66" status="BS" slack="-0.017241379310344307" dual="-0"/>
+  <constraint name="c68" index="67" status="LL" slack="0" dual="0.017241379310344782"/>
+  <constraint name="c69" index="68" status="LL" slack="0" dual="0.017241379310344779"/>
+  <constraint name="c70" index="69" status="BS" slack="-0.2413793103448274" dual="-0"/>
+  <constraint name="c71" index="70" status="BS" slack="-0.46551724137930961" dual="-0"/>
+  <constraint name="c72" index="71" status="BS" slack="-0.46551724137930783" dual="-0"/>
+  <constraint name="c73" index="72" status="BS" slack="-0.93103448275861567" dual="-0"/>
+  <constraint name="c74" index="73" status="BS" slack="-0.94827586206895909" dual="-0"/>
+  <constraint name="c75" index="74" status="BS" slack="-0.93103448275861567" dual="-0"/>
+  <constraint name="c76" index="75" status="BS" slack="-0.46551724137930961" dual="-0"/>
+  <constraint name="c77" index="76" status="BS" slack="-0.43103448275861656" dual="-0"/>
+  <constraint name="c78" index="77" status="BS" slack="-0.41379310344827314" dual="-0"/>
+  <constraint name="c79" index="78" status="BS" slack="-0.43103448275861567" dual="-0"/>
+  <constraint name="c80" index="79" status="BS" slack="-0.84482758620689147" dual="-0"/>
+  <constraint name="c81" index="80" status="BS" slack="-0.43103448275861389" dual="-0"/>
+  <constraint name="c82" index="81" status="BS" slack="-0.7586206896551726" dual="-0"/>
+  <constraint name="c83" index="82" status="BS" slack="-0.7586206896551726" dual="-0"/>
+  <constraint name="c84" index="83" status="BS" slack="-1.5172413793103452" dual="-0"/>
+  <constraint name="c85" index="84" status="BS" slack="-0.7758620689655169" dual="-0"/>
+  <constraint name="c86" index="85" status="BS" slack="-1.5344827586206895" dual="-0"/>
+  <constraint name="c87" index="86" status="BS" slack="-1.5344827586206895" dual="-0"/>
+  <constraint name="c88" index="87" status="BS" slack="-1.5344827586206895" dual="-0"/>
+  <constraint name="c89" index="88" status="BS" slack="-0.75862068965517171" dual="-0"/>
+  <constraint name="c90" index="89" status="BS" slack="-0.7586206896551726" dual="-0"/>
+  <constraint name="c91" index="90" status="BS" slack="-1.5172413793103452" dual="-0"/>
+  <constraint name="c92" index="91" status="BS" slack="-1.5172413793103452" dual="-0"/>
+  <constraint name="c93" index="92" status="BS" slack="-0.7586206896551726" dual="-0"/>
+  <constraint name="c94" index="93" status="BS" slack="-0.74137931034482474" dual="-0"/>
+  <constraint name="c95" index="94" status="BS" slack="-0.72413793103448043" dual="-0"/>
+  <constraint name="c96" index="95" status="BS" slack="-0.74137931034482474" dual="-0"/>
+  <constraint name="c97" index="96" status="BS" slack="-1.4655172413793061" dual="-0"/>
+  <constraint name="c98" index="97" status="BS" slack="-0.74137931034482829" dual="-0"/>
+  <constraint name="c99" index="98" status="BS" slack="-0.4482758620689653" dual="-0"/>
+  <constraint name="c100" index="99" status="BS" slack="-0.91379310344826958" dual="-0"/>
+  <constraint name="c101" index="100" status="BS" slack="-0.91379310344826958" dual="-0"/>
+  <constraint name="c102" index="101" status="BS" slack="-0.89655172413792439" dual="-0"/>
+  <constraint name="c103" index="102" status="BS" slack="-0.89655172413792883" dual="-0"/>
+  <constraint name="c104" index="103" status="BS" slack="-0.89655172413792794" dual="-0"/>
+  <constraint name="c105" index="104" status="BS" slack="-0.46551724137930695" dual="-0"/>
+  <constraint name="c106" index="105" status="BS" slack="-0.4482758620689653" dual="-0"/>
+  <constraint name="c107" index="106" status="BS" slack="-0.44827586206896264" dual="-0"/>
+  <constraint name="c108" index="107" status="BS" slack="-0.9137931034482687" dual="-0"/>
+  <constraint name="c109" index="108" status="BS" slack="-0.44827586206896219" dual="-0"/>
+  <constraint name="c110" index="109" status="BS" slack="-0.4482758620689653" dual="-0"/>
+  <constraint name="c111" index="110" status="BS" slack="-0.89655172413792883" dual="-0"/>
+  <constraint name="c112" index="111" status="BS" slack="-0.87931034482758452" dual="-0"/>
+  <constraint name="c113" index="112" status="BS" slack="-0.89655172413793061" dual="-0"/>
+  <constraint name="c114" index="113" status="BS" slack="-1.7758620689655196" dual="-0"/>
+  <constraint name="c115" index="114" status="BS" slack="-0.89655172413792528" dual="-0"/>
  </linearConstraints>
  <variables>
-  <variable name="x0" index="0" status="BS" value="0" reducedCost="0"/>
-  <variable name="x1" index="1" status="BS" value="0.49999999999999989" reducedCost="0"/>
-  <variable name="x2" index="2" status="BS" value="0.49999999999999967" reducedCost="0"/>
-  <variable name="x6" index="3" status="BS" value="1.0000000000000004" reducedCost="0"/>
-  <variable name="x7" index="4" status="BS" value="0" reducedCost="0"/>
-  <variable name="x8" index="5" status="BS" value="0" reducedCost="0"/>
+  <variable name="x0" index="0" status="BS" value="0.24137931034482757" reducedCost="0"/>
+  <variable name="x1" index="1" status="BS" value="0.24137931034482757" reducedCost="0"/>
+  <variable name="x2" index="2" status="BS" value="0.24137931034482757" reducedCost="0"/>
+  <variable name="x6" index="3" status="BS" value="0.48275862068965514" reducedCost="0"/>
+  <variable name="x7" index="4" status="BS" value="0.48275862068965492" reducedCost="0"/>
+  <variable name="x8" index="5" status="BS" value="0.4655172413793105" reducedCost="0"/>
  </variables>
  <objectiveValues>
-  <objective index="0" name="" value="2"/>
+  <objective index="0" name="" value="2.1551724137931032"/>
  </objectiveValues>
 </CPLEXSolution>
