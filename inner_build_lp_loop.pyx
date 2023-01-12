@@ -85,6 +85,44 @@ cdef dict agg_inner_build_value_dict(dict hash_table, dict node_orbit, list cut_
     #print(agg_cuts)
     #input()
     return agg_cuts
+#### Inner ALP build loop for cut values for aggregate model single cut####
+cdef dict agg_inner_build_value_dict_single(dict hash_table, dict node_orbit, list cut_orbit, 
+                                     dict col_orbit_rep, int num_col_orbits, int num_row_orbits, 
+                                     list first_cut, list cut_orbit_rep, dict col_orbit, dict col_orbit_size):
+    agg_cuts = {agg_row : {} for agg_row in range(num_row_orbits)}
+    rhs = first_cut[-1]
+    num_col = len(col_orbit)
+    cdef int rep_len = len(cut_orbit_rep)
+#     for cut_orb in cut_orbit:
+#     for i in range(len(cut_orbit)):
+#         cut_orb = cut_orbit[i]
+#         in_cut = list(cut_orb)
+#         in_cut.append(rhs)
+#         cut_key = build_cut_key(in_cut)
+#         node_key = hash_table.get(cut_key)
+#         node_orb = node_orbit.get(node_key)
+#         for agg_col in range(num_col_orbits):
+#             rep = col_orbit_rep.get(agg_col)
+#             agg_cut = agg_cuts.get(node_orb)
+#             if agg_cut.get(agg_col) is None:
+#                 agg_cuts[node_orb][agg_col] = 0
+#             agg_cuts[node_orb][agg_col] += float(cut_orb[rep])
+    for i in range(rep_len):
+        cut_orb = cut_orbit_rep[i]
+#         in_cut = list(cut_orb)
+#         in_cut.append(rhs)
+#         cut_key = build_cut_key(in_cut)
+#         node_key = hash_table.get(cut_key)
+#         node_orb = node_orbit.get(node_key)
+        for i_col in range(num_col):
+            agg_col = int(col_orbit.get(i_col))
+            coeff = cut_orb[i_col]
+            if agg_cuts.get(i).get(agg_col) is None:
+                agg_cuts[i][agg_col] = 0
+            agg_cuts[i][agg_col] += float(coeff/col_orbit_size.get(agg_col))
+    #print(agg_cuts)
+    #input()
+    return agg_cuts
 #### Inner ALP build loop for cut rhs for aggregate model
 cdef dict agg_inner_build_indices_dict(dict hash_table, dict node_orbit, list cut_orbit, 
                                        dict col_orbit_rep, int num_col_orbits, int num_row_orbits, 
@@ -539,7 +577,7 @@ def lift_cut_single_cy(cut, group, first_group, orbits, num_tot, hash_table, nod
     print(agg_cuts_rhs)
     input()
     """
-    agg_cuts = agg_inner_build_value_dict(hash_table, node_orbit, [lifted_cut[:-1]], 
+    agg_cuts = agg_inner_build_value_dict_single(hash_table, node_orbit, [lifted_cut[:-1]], 
                                           orbits.col_orbit_rep, orbits.num_col_orbits, num_row_orbits, 
                                           lifted_cut, cut_orbit_rep, orbits.col_orbit, orbits.col_orbit_size)
     agg_cuts_rhs = agg_inner_build_indices_dict(hash_table, node_orbit, [lifted_cut[:-1]], 
