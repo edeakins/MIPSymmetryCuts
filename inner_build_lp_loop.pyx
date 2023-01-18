@@ -82,8 +82,8 @@ cdef dict agg_inner_build_value_dict(dict hash_table, dict node_orbit, list cut_
             if agg_cuts.get(i).get(agg_col) is None:
                 agg_cuts[i][agg_col] = 0
             agg_cuts[i][agg_col] += float(coeff.sage()/col_orbit_size.get(agg_col))
-    #print(agg_cuts)
-    #input()
+#     print(agg_cuts)
+#     input()
     return agg_cuts
 #### Inner ALP build loop for cut values for aggregate model single cut####
 cdef dict agg_inner_build_value_dict_single(dict hash_table, dict node_orbit, list cut_orbit, 
@@ -120,8 +120,8 @@ cdef dict agg_inner_build_value_dict_single(dict hash_table, dict node_orbit, li
             if agg_cuts.get(i).get(agg_col) is None:
                 agg_cuts[i][agg_col] = 0
             agg_cuts[i][agg_col] += float(coeff/col_orbit_size.get(agg_col))
-    #print(agg_cuts)
-    #input()
+#     print(agg_cuts)
+#     input()
     return agg_cuts
 #### Inner ALP build loop for cut rhs for aggregate model
 cdef dict agg_inner_build_indices_dict(dict hash_table, dict node_orbit, list cut_orbit, 
@@ -314,6 +314,7 @@ def lift_cut_cy(cut, group, first_group, orbits, num_tot, hash_table, node_table
 def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table, node_table, full_mdl, agg_mdl):
     num_full_cut = copy.deepcopy(num_tot)
     num_full_row = copy.deepcopy(num_tot)
+    num_agg_cut = copy.deepcopy(agg_mdl.variables.get_num() + agg_mdl.linear_constraints.get_num())
     num_row_orbits = 0
     new_cut_orbit_size = {}
     new_orbits = []
@@ -345,32 +346,20 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table, no
                 num_nz += 1
     lifted_cut.append(rhs)
 #     print(lifted_cut)
-#     input()
     lift_str = ",".join(str(el) for el in lifted_cut)
 #     print(lift_str)
 #     input()
     # lift_str += "," + str(rhs)
     if hash_table.get(lift_str) != None:
         return (new_orbits, new_cut_orbit_size)
-    cut_orbit = lg.Orbit(lg(first_group), lifted_cut[:-1], lg.Permuted)
+    cut_orbit = lg.Orbit(lg(first_group), lg(lifted_cut[:-1]), lg.Permuted)
     print("Cuts being added: %d" % len(cut_orbit))
     gen_cut_time = time.perf_counter() - start_1
-#     cdef array.array cut_orbit_start = array.array("i")
-#     cdef int [:] ccut_orbit_start = cut_orbit_start
-#     cdef array.array cut_orbit_val = array.array("d")
-#     cdef double [:] ccut_orbit_val = cut_orbit_val
-#     cdef array.array cut_orbit_idx = array.array("i")
-#     cdef int [:] ccut_orbit_idx = cut_orbit_idx
-#     cut_orbit_start.extend(
-#     cdef vector[int] cut_orb_start
-#     cdef vector[int] cut_orb_idx
-#     cdef vector[double] cut_orb_val
-#     cut_orb_start.resize(len(cut_orbit) + 1)
-#     cut_orb_idx.resize(num_nz * len(cut_orbit))
-#     cut_orb_val.resize(num_nz * len(cut_orbit))
-#     print(type(cut_orb_val))
-#     input()
-    # LIFT THE CUTS TO THE ORIGINAL MODEL
+    start_2 = time.perf_counter()
+    stab_cut_orbit = lg.OrbitsDomain(lg(group), cut_orbit, lg.Permuted)
+    orbit_lengths = lg.OrbitLengthsDomain(lg(group), cut_orbit, lg.Permuted)
+    num_stab_orbits = len(orbit_lengths)
+    gen_cut_agg_orb_time = time.perf_counter() - start_1
     cut_rows = []
     cut_rows_sense = []
     cut_rows_rhs = []
@@ -378,52 +367,94 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table, no
     name = num_full_row
     cut_idx = 0
     num_cut = 0
-    for cut_orb in cut_orbit:
-        start_2 = time.perf_counter()
+    for i_orb in range(num_stab_orbits):
+    #     start_2 = time.perf_counter()
+        rep_orb = stab_cut_orbit[i_orb][0]
+        orb_size = orbit_lengths[i_orb]
         ###### TESTING #######
-        in_cut = list(cut_orb)
+        in_cut = list(rep_orb)
         in_cut.append(rhs)
+        in_cut = [sg.RealNumber(el) for el in in_cut]
         cut_key = build_cut_key(in_cut)
         node_key = hash_table.get(cut_key)
-        # full_cut_idx = full_inner_build_indices(cut_orb.sage(), num_nz)
-        # full_cut_val = full_inner_build_vals(cut_orb.sage(), num_nz)
-        ##### TESTING #####
-        # cut_rows.append(cp.SparsePair(full_cut_idx, full_cut_val))
-        # cut_rows_sense.append("G")
-        # cut_rows_rhs.append(float(rhs))
-        # cut_rows_name.append("C%d" % name)
-        # name += 1
-        # add_to_full_model_time += time.perf_counter() - start_2
-        if node_orbit.get(node_key) != None:
-            continue
-        new_orbit = []
-        start_3 = time.perf_counter()
-        stab_orb = lg.Orbit(lg(group), cut_orb, lg.Permuted)
-#         print(stab_orb) 
-#         input()
-        for orb in stab_orb:
-            full_cut_idx = full_inner_build_indices(orb.sage(), num_nz)
-            full_cut_val = full_inner_build_vals(orb.sage(), num_nz)
-            cut_rows.append(cp.SparsePair(full_cut_idx, full_cut_val))
-            cut_rows_sense.append("G")
-            cut_rows_rhs.append(float(rhs))
-            cut_rows_name.append("R%d" % name)
-            name += 1
-            in_cut = list(orb)
-            in_cut.append(rhs)
-            orb_key = build_cut_key(in_cut)
-            hash_table[orb_key] = num_full_cut
-            node_table[num_full_cut] = orb_key
-            new_orbit.append(num_full_cut)
-            node_orbit[num_full_cut] = num_row_orbits 
-            num_full_cut += 1
-        cut_orbit_rep.append(stab_orb[0])
-        new_cut_orbit[num_row_orbits] = new_orbit[0]
-        new_cut_orbit_size[num_row_orbits] = len(new_orbit)
+    #         if node_orbit.get(node_key) is not None:
+    #             continue
+        full_cut_idx = full_inner_build_indices(rep_orb.sage(), num_nz)
+        full_cut_val = full_inner_build_vals(rep_orb.sage(), num_nz)
+        cut_rows.append(cp.SparsePair(full_cut_idx, full_cut_val))
+        cut_rows_sense.append("G")
+        cut_rows_rhs.append(float(rhs))
+        cut_rows_name.append("R%d" % name)
+        hash_table[cut_key] = num_full_cut
+        node_table[num_full_cut] = cut_key
+        node_orbit[num_full_cut] = num_row_orbits 
+        cut_orbit_rep.append(rep_orb)
+        new_cut_orbit[num_row_orbits] = num_full_cut
+        new_cut_orbit_size[num_agg_cut] = int(orb_size)
+        new_orbits.append([num_full_cut])
         num_row_orbits += 1
-        new_orbits.append(new_orbit)
-        gen_cut_agg_orb_time += time.perf_counter() - start_3
-#     full_cut_csr = scipy.sparse.csr_matrix((full_cut_val, full_cut_idx, full_cut_start))
+        num_agg_cut += 1
+        num_full_cut += 1
+        name += 1
+#     # LIFT THE CUTS TO THE ORIGINAL MODEL
+#     cut_rows = []
+#     cut_rows_sense = []
+#     cut_rows_rhs = []
+#     cut_rows_name = []
+#     name = num_full_row
+#     cut_idx = 0
+#     num_cut = 0
+#     for cut_orb in cut_orbit:
+#         start_2 = time.perf_counter()
+#         ###### TESTING #######
+#         in_cut = list(cut_orb)
+#         in_cut.append(rhs)
+#         in_cut = [sg.RealNumber(el) for el in in_cut]
+#         cut_key = build_cut_key(in_cut)
+#         node_key = hash_table.get(cut_key)
+#         # full_cut_idx = full_inner_build_indices(cut_orb.sage(), num_nz)
+#         # full_cut_val = full_inner_build_vals(cut_orb.sage(), num_nz)
+#         ##### TESTING #####
+#         # cut_rows.append(cp.SparsePair(full_cut_idx, full_cut_val))
+#         # cut_rows_sense.append("G")
+#         # cut_rows_rhs.append(float(rhs))
+#         # cut_rows_name.append("C%d" % name)
+#         # name += 1
+#         # add_to_full_model_time += time.perf_counter() - start_2
+#         if node_orbit.get(node_key) != None:
+#             continue
+#         new_orbit = []
+#         start_3 = time.perf_counter()
+#         stab_orb = lg.Orbit(lg(group), lg(cut_orb), lg.Permuted)
+# #         print(stab_orb) 
+# #         input()
+#         for orb in stab_orb:
+#             full_cut_idx = full_inner_build_indices(orb.sage(), num_nz)
+#             full_cut_val = full_inner_build_vals(orb.sage(), num_nz)
+#             cut_rows.append(cp.SparsePair(full_cut_idx, full_cut_val))
+#             cut_rows_sense.append("G")
+#             cut_rows_rhs.append(float(rhs))
+#             cut_rows_name.append("R%d" % name)
+#             name += 1
+#             in_cut = list(orb)
+#             in_cut.append(rhs)
+#             in_cut = [sg.RealNumber(el) for el in in_cut]
+#             orb_key = build_cut_key(in_cut)
+# #             print(orb_key)
+# #             input()
+#             hash_table[orb_key] = num_full_cut
+#             node_table[num_full_cut] = orb_key
+#             new_orbit.append(num_full_cut)
+#             node_orbit[num_full_cut] = num_row_orbits 
+#             num_full_cut += 1
+#         cut_orbit_rep.append(stab_orb[0])
+#         new_cut_orbit[num_row_orbits] = new_orbit[0]
+#         new_cut_orbit_size[num_agg_cut] = len(new_orbit)
+#         num_row_orbits += 1
+#         num_agg_cut += 1
+#         new_orbits.append(new_orbit)
+#         gen_cut_agg_orb_time += time.perf_counter() - start_3
+# #     full_cut_csr = scipy.sparse.csr_matrix((full_cut_val, full_cut_idx, full_cut_start))
     start_2 = time.perf_counter()
     full_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
                                        rhs = cut_rows_rhs, names = cut_rows_name)
@@ -482,6 +513,7 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table, no
 def lift_cut_single_cy(cut, group, first_group, orbits, num_tot, hash_table, node_table, full_mdl, agg_mdl):
     num_full_cut = copy.deepcopy(num_tot)
     num_full_row = copy.deepcopy(num_tot)
+    num_agg_cut = copy.deepcopy(agg_mdl.variables.get_num() + agg_mdl.linear_constraints.get_num())
     num_row_orbits = 0
     new_cut_orbit_size = {}
     new_orbits = []
@@ -544,8 +576,9 @@ def lift_cut_single_cy(cut, group, first_group, orbits, num_tot, hash_table, nod
     node_orbit[num_full_cut] = num_row_orbits 
     num_full_cut += 1
     new_cut_orbit[num_row_orbits] = new_orbit[0]
-    new_cut_orbit_size[num_row_orbits] = len(new_orbit)
+    new_cut_orbit_size[num_agg_cut] = len(new_orbit)
     num_row_orbits += 1
+    num_agg_cut += 1
     new_orbits.append(new_orbit)
     gen_cut_agg_orb_time += time.perf_counter() - start_3
     start_2 = time.perf_counter()
@@ -723,9 +756,9 @@ def aggregate_A_mat_average_cy(mdl, orbits):
             i_val = val[i_mat]
             agg_col = int(orbits.col_orbit.get(i_col))
             scale = col_orbit_size[agg_col]
-            if agg_row.get(agg_col) is None:
-                agg_row[agg_col] = 0
-            agg_row[agg_col] += i_val/scale
+#             if agg_row.get(agg_col) is None:
+#                 agg_row[agg_col] = 0
+#             agg_row[agg_col] += i_val/scale
             agg_values[agg_col] += i_val/scale
         for agg_col in range(num_col_orbits):
             val = agg_values[agg_col]

@@ -1,0 +1,97 @@
+./margot_instances/cov832.mps
+
+Totals
+Total # cuts added to full model: 104498
+Total # cuts added to agg model: 53250
+Full obj at end of ocg: 10.0000
+Full obj before ocg: 9.3333
+./margot_instances/sts63.mps
+
+Totals
+Total # cuts added to full model: 1103
+Total # cuts added to agg model: 207
+Full obj at end of ocg: 30.0000
+Full obj before ocg: 21.0000
+./margot_instances/sts63.mps
+./margot_instances/sts63.mps
+./margot_instances/sts63.mps
+./margot_instances/sts63.mps
+./margot_instances/sts63.mps
+./margot_instances/sts63.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 74
+Total # cuts added to agg model: 26
+Full obj at end of ocg: 3.0000
+Full obj before ocg: 1.8000
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 74
+Total # cuts added to agg model: 26
+Full obj at end of ocg: 3.0000
+Full obj before ocg: 1.8000
+./small_tests/codbt02.mps
+./margot_instances/cov1052.mps
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 105
+Total # cuts added to agg model: 105
+Full obj at end of ocg: 2.5406
+Full obj before ocg: 1.8000
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 26
+Total # cuts added to agg model: 14
+Full obj at end of ocg: 3.0000
+Full obj before ocg: 1.8000
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 26
+Total # cuts added to agg model: 14
+Full obj at end of ocg: 3.0000
+Full obj before ocg: 1.8000
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+./small_tests/codbt02.mps
+
+Totals
+Total # cuts added to full model: 14
+Total # cuts added to agg model: 14
+Full obj at end of ocg: 3.0000
+Full obj before ocg: 1.8000
+./small_tests/tiny_3_var.mps
+
+Totals
+Total # cuts added to full model: 1
+Total # cuts added to agg model: 1
+Full obj at end of ocg: 2.0000
+Full obj before ocg: 1.5000
