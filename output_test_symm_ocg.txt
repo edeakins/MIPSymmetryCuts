@@ -1,241 +1,139 @@
-./margot_instances/cov832.mps
+./margot_instances/codbt80.mps
+Total # cuts added to full model: 315653
+Total # cuts added to agg model: 447
+Full obj at end of ocg: 32.0000
+Full obj before ocg: 28.4444
 
-Totals
-Total # cuts added to full model: 104498
-Total # cuts added to agg model: 53250
-Full obj at end of ocg: 10.0000
-Full obj before ocg: 9.3333
-./margot_instances/sts63.mps
+./margot_instances/sts81.mps
+Total # cuts added to full model: 9019
+Total # cuts added to agg model: 1387
+Full obj at end of ocg: 29.0000
+Full obj before ocg: 27.0000
 
-Totals
-Total # cuts added to full model: 1103
-Total # cuts added to agg model: 207
+./margot_instances/codbt71.mps
+Total # cuts added to full model: 311107
+Total # cuts added to agg model: 1935
+Full obj at end of ocg: 40.0000
+Full obj before ocg: 38.4000
+
+./margot_instances/codbt43.mps
+Total # cuts added to full model: 305210
+Total # cuts added to agg model: 8574
+Full obj at end of ocg: 40.0000
+Full obj before ocg: 39.2727
+
+./margot_instances/codbt24.mps
+Total # cuts added to full model: 311771
+Total # cuts added to agg model: 6527
 Full obj at end of ocg: 30.0000
-Full obj before ocg: 21.0000
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
+Full obj before ocg: 29.4545
 
-Totals
-Total # cuts added to full model: 74
-Total # cuts added to agg model: 26
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
+./margot_instances/codbt42.mps
+Total # cuts added to full model: 302113
+Total # cuts added to agg model: 19543
+Full obj at end of ocg: 17.0000
+Full obj before ocg: 16.0000
 
-Totals
-Total # cuts added to full model: 74
-Total # cuts added to agg model: 26
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
-./margot_instances/cov1052.mps
-./small_tests/codbt02.mps
+./margot_instances/cod105.mps
+Total # cuts added to full model: 300034
+Total # cuts added to agg model: 544
+Full obj at end of ocg: -17.0000
+Full obj before ocg: -18.2857
 
-Totals
-Total # cuts added to full model: 105
-Total # cuts added to agg model: 105
-Full obj at end of ocg: 2.5406
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
+./margot_instances/codbt61.mps
+Total # cuts added to full model: 303363
+Total # cuts added to agg model: 12568
+Full obj at end of ocg: 23.0000
+Full obj before ocg: 21.3333
 
-Totals
-Total # cuts added to full model: 26
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
+./margot_instances/cov1076.mps
+Total # cuts added to full model: 406636
+Total # cuts added to agg model: 11494
+Full obj at end of ocg: 34.0000
+Full obj before ocg: 30.0000
 
-Totals
-Total # cuts added to full model: 26
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
+./margot_instances/codbt03.mps
+Total # cuts added to full model: 2541
+Total # cuts added to agg model: 1317
+Full obj at end of ocg: 5.0000
+Full obj before ocg: 3.8571
 
-Totals
-Total # cuts added to full model: 14
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/tiny_3_var.mps
+./margot_instances/cov743.mps
+Total # cuts added to full model: 41164
+Total # cuts added to agg model: 21437
+Full obj at end of ocg: 11.0000
+Full obj before ocg: 8.7500
 
-Totals
-Total # cuts added to full model: 1
-Total # cuts added to agg model: 1
-Full obj at end of ocg: 2.0000
-Full obj before ocg: 1.5000
-./margot_instances/cov1052.mps
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
+./margot_instances/sts45.mps
+Total # cuts added to full model: 5657
+Total # cuts added to agg model: 1510
+Full obj at end of ocg: 19.0000
+Full obj before ocg: 15.0000
 
-Totals
-Total # cuts added to full model: 14
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
+./margot_instances/codbt52.mps
+Total # cuts added to full model: 303266
+Total # cuts added to agg model: 34472
+Full obj at end of ocg: 29.0000
+Full obj before ocg: 28.8000
 
-Totals
-Total # cuts added to full model: 14
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
-
-Totals
-Total # cuts added to full model: 14
-Total # cuts added to agg model: 14
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/codbt02.mps
-
-Totals
-Total # cuts added to full model: 12
-Total # cuts added to agg model: 12
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-
-Totals
-Total # cuts added to full model: 61106
-Total # cuts added to agg model: 61106
-Full obj at end of ocg: 26.0000
-Full obj before ocg: 21.0000
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-
-Totals
-Total # cuts added to full model: 65
-Total # cuts added to agg model: 65
+./margot_instances/codbt33.mps
+Total # cuts added to full model: 302728
+Total # cuts added to agg model: 2640
 Full obj at end of ocg: 24.0000
-Full obj before ocg: 21.0000
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/sts63.mps
-./margot_instances/cod103.mps
+Full obj before ocg: 21.6000
 
-Totals
-Total # cuts added to full model: 64
-Total # cuts added to agg model: 64
-Full obj at end of ocg: -93.0000
-Full obj before ocg: -93.0909
-./margot_instances/cod103.mps
-./margot_instances/codbt03.mps
-
-Totals
-Total # cuts added to full model: 1289
-Total # cuts added to agg model: 1289
-Full obj at end of ocg: 5.0000
-Full obj before ocg: 3.8571
-./margot_instances/codbt03.mps
-
-Totals
-Total # cuts added to full model: 1289
-Total # cuts added to agg model: 1289
-Full obj at end of ocg: 5.0000
-Full obj before ocg: 3.8571
 ./margot_instances/codbt04.mps
-
-Totals
 Total # cuts added to full model: 0
 Total # cuts added to agg model: 0
 Full obj at end of ocg: 9.0000
 Full obj before ocg: 9.0000
-./small_tests/codbt02.mps
-./small_tests/codbt02.mps
 
-Totals
-Total # cuts added to full model: 12
-Total # cuts added to agg model: 6
-Full obj at end of ocg: 3.0000
-Full obj before ocg: 1.8000
-./small_tests/cov1052.mps
-./margot_instances/cov1174.mps
-./margot_instances/cov1174.mps
-./margot_instances/cov1174.mps
-./margot_instances/sts63.mps
-
-Totals
-Total # cuts added to full model: 52838
-Total # cuts added to agg model: 12458
-Full obj at end of ocg: 25.0000
-Full obj before ocg: 21.0000
-./margot_instances/sts63.mps
-
-Totals
-Total # cuts added to full model: 34
-Total # cuts added to agg model: 34
+./margot_instances/cov943.mps
+Total # cuts added to full model: 318908
+Total # cuts added to agg model: 8569
 Full obj at end of ocg: 23.0000
 Full obj before ocg: 21.0000
-./margot_instances/sts45.mps
 
-Totals
-Total # cuts added to full model: 12
-Total # cuts added to agg model: 12
+./margot_instances/codbt70.mps
+Total # cuts added to full model: 100352
+Total # cuts added to agg model: 4200
 Full obj at end of ocg: 16.0000
-Full obj before ocg: 15.0000
-./margot_instances/sts81.mps
+Full obj before ocg: 16.0000
 
-Totals
-Total # cuts added to full model: 12
-Total # cuts added to agg model: 12
-Full obj at end of ocg: 28.0000
-Full obj before ocg: 27.0000
-./margot_instances/codbt34.mps
-./margot_instances/codbt80.mps
-./margot_instances/codbt80.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./margot_instances/codbt03.mps
-./small_tests/cov1052.mps
-./small_tests/cov1052.mps
-./small_tests/cov1052.mps
-./small_tests/cov1052.mps
+./margot_instances/sts243.mps
+Total # cuts added to full model: 27893
+Total # cuts added to agg model: 1958
+Full obj at end of ocg: 87.0000
+Full obj before ocg: 81.0000
+
+
+./margot_instances/cov632.mps
+Total # cuts added to full model: 231
+Total # cuts added to agg model: 135
+Full obj at end of ocg: 6.0000
+Full obj before ocg: 5.0000
+
+./margot_instances/cov954.mps
+Total # cuts added to full model: 13359
+Total # cuts added to agg model: 1749
+Full obj at end of ocg: 27.0000
+Full obj before ocg: 25.2000
+
+./margot_instances/cov1053.mps
+Total # cuts added to full model: 300007
+Total # cuts added to agg model: 1252
+Full obj at end of ocg: 13.0000
+Full obj before ocg: 12.0000
+
+./margot_instances/sts63.mps
+Total # cuts added to full model: 220584
+Total # cuts added to agg model: 51748
+Full obj at end of ocg: 35.0000
+Full obj before ocg: 21.0000
+
+./margot_instances/cov1075.mps
+Total # cuts added to full model: 302401
+Total # cuts added to agg model: 43304
+Full obj at end of ocg: 13.0000
+Full obj before ocg: 12.0000
+
