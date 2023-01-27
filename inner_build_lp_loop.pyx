@@ -21,7 +21,8 @@ cdef str build_cut_key(list cut_orb):
     return cut_key
 #### Inner LP build loop for cut values for full model with cuts added ####
 cdef list full_inner_build_vals(list cut_orbs, dict hash_table, dict node_table,
-                                          dict cut_rhs, double rhs, int num_full_row, int num_full_cut, int num_nz):
+                                dict cut_rhs, double rhs, int num_full_row, 
+                                int num_full_cut, int num_nz, cut_map):
     cdef vector[int] full_cut_idx
     cdef vector[double] full_cut_val
     cdef int nz_idx = 0
@@ -36,7 +37,7 @@ cdef list full_inner_build_vals(list cut_orbs, dict hash_table, dict node_table,
     cut_rows_name = []
     name = num_full_row
     for i_orb in range(len(cut_orbs)):
-        cut_orb = cut_orbs[i_orb]
+        cut_orb = [cut_map.get(unq) for unq in cut_orbs[i_orb]]
         in_cut = cut_orb
         in_cut.append(rhs)
         in_cut = [sg.Rational(el) for el in in_cut]
@@ -113,12 +114,12 @@ cdef list agg_inner_build_value(dict hash_table, dict node_orbit,
         for i_col in range(num_col):
             agg_col = int(col_orbit.get(i_col))
             coeff = cut_orb[i_col]
-            if abs(coeff.sage() - 0) < 1e-6:
+            if abs(coeff - 0) < 1e-6:
                 continue
 #             if agg_cuts.get(i).get(agg_col) is None:
 #                 agg_cuts[i][agg_col] = 0
 #             agg_cuts[i][agg_col] += float(coeff.sage()/col_orbit_size.get(agg_col))
-            agg_values[agg_col] += float(coeff.sage()/col_orbit_size.get(agg_col))
+            agg_values[agg_col] += float(coeff/col_orbit_size.get(agg_col))
         for agg_col in range(num_col_orbits):
             val = agg_values[agg_col]
             if (abs(val - 0) < 1e-6):
@@ -214,7 +215,21 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
     # GENERATE ALL CUTS IN THE ORBIT OF ORIGINAL CUT USING ORIGINAL GROUP G
     rhs = cut[-1]
     num_nz = 0
+    cdef int idx
+    cdef int num_unique = 0
+    cdef double scale
+    cdef int var
+    cdef int col
+    cdef int map_val
+    unique_coeff = set()
+    unique_map = {}
+    coeff_map = {}
     for col, coeff in enumerate(cut[:-1]):
+        if coeff not in unique_coeff:
+            coeff_map[coeff] = num_unique
+            unique_map[num_unique] = coeff
+            unique_coeff.add(coeff)
+            num_unique += 1
         for idx in range(orbits.orbit_col_start[col], orbits.orbit_col_start[col + 1]):
             scale = orbits.col_orbit_size[col]
             var = orbits.orbit_col[idx]
@@ -222,8 +237,11 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
             if abs(coeff - 0) > 1e-6:
                 num_nz += 1
     lifted_cut.append(rhs)
-#     print(lifted_cut)
-#     input()
+    cdef vector[int] cut_for_gap
+    for col in range(len(orbits.col_orbit.keys())):
+        coeff = lifted_cut[col]
+        map_val = coeff_map.get(coeff)
+        cut_for_gap.push_back(sg.Integer(map_val))
     lift_str = ",".join(str(el) for el in lifted_cut)
 #     print(lift_str)
 
@@ -231,18 +249,23 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
     if hash_table.get(lift_str) != None:
         return (new_orbits, new_cut_orbit_size, [], [], [], [])
     start_1 = time.perf_counter()
-    cut_orbit = lg.Orbit(lg(first_group), lg(lifted_cut[:-1]), lg.Permuted)
-    if len(cut_orbit) > 30000:
+    cut_orbit = lg.Orbit(lg(first_group), lg(cut_for_gap), lg.Permuted)
+    if len(cut_orbit) > 300000:
+        print("too symmetric cuts for this gomory cut...moving on")
         hash_table[lift_str] = "too_big"
         return (new_orbits, new_cut_orbit_size, [], [], [], [])
-    cut_reps[num_full_cut] = cut_orbit[0]
+    for_cut_reps = [unique_map.get(unq) for unq in cut_orbit[0].sage()]
+    cut_reps[num_full_cut] = for_cut_reps
+#     print(cut_reps)
+#     input()
     gen_cut_time = time.perf_counter() - start_1
-    print("Cuts being added: %d" % len(cut_orbit))
+    print("\n%.2f seconds required to generate %d cuts for full model." % (gen_cut_time, len(cut_orbit)))
     start_2 = time.perf_counter()
     stab_cut_orbit = lg.OrbitsDomain(lg(group), cut_orbit, lg.Permuted)
     orbit_lengths = lg.OrbitLengthsDomain(lg(group), cut_orbit, lg.Permuted)
     num_stab_orbits = len(orbit_lengths)
     gen_cut_agg_orb_time = time.perf_counter() - start_2
+    print("%.2f seconds required to generate %d cuts for aggregate model." % (gen_cut_agg_orb_time, len(orbit_lengths)))
     cut_rows = []
     cut_rows_sense = []
     cut_rows_rhs = []
@@ -253,8 +276,8 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
     start_3 = time.perf_counter()
     n_f_cut_added = len(cut_orbit)
     n_a_cut_added = len(orbit_lengths)
-#     cdef int i_orb
-#     cdef int i_cut
+    cdef int i_orb
+    cdef int i_cut
 #     for i_orb in range(len(cut_orbit)):
 #         cut_orb = cut_orbit[i_orb]
 #         in_cut = cut_orb.sage()
@@ -273,21 +296,25 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
 #         cut_rhs[num_full_cut] = rhs
 #         num_full_cut += 1
     output = full_inner_build_vals(cut_orbit.sage(), hash_table, node_table,
-                                  cut_rhs, rhs, num_full_row, num_full_cut, num_nz)
+                                  cut_rhs, rhs, num_full_row, num_full_cut, num_nz,
+                                  unique_map)
     cut_rows = output[0]
     cut_rows_sense = output[1]
     cut_rows_rhs = output[2]
     cut_rows_name = output[3]
     full_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
                                        rhs = cut_rows_rhs, names = cut_rows_name)
+    add_to_full_model_time += time.perf_counter() - start_3
+    print("%.2f seconds required to add cuts to full model." % add_to_full_model_time)
     del cut_orbit
     del cut_rows
     del cut_rows_sense
     del cut_rows_rhs
     del cut_rows_name
+    t_5 = time.perf_counter()
     for i_orb in range(num_stab_orbits):
     #     start_2 = time.perf_counter()
-        rep_orb = stab_cut_orbit[i_orb][0]
+        rep_orb = [unique_map.get(unq) for unq in stab_cut_orbit[i_orb][0].sage()]
 #         cut_reps[num_full_cut].append(rhs)
         orb_size = orbit_lengths[i_orb]
 #         ###### TESTING #######
@@ -317,8 +344,12 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
 #         name += 1
         new_orbit = []
         for i_cut in range(orb_size):
-            cut_orb = stab_cut_orbit[i_orb][i_cut]
-            in_cut = cut_orb.sage()
+#             print(unique_map)
+#             print(stab_cut_orbit[i_orb][i_cut])
+            cut_orb = [unique_map.get(unq) for unq in stab_cut_orbit[i_orb][i_cut].sage()]
+#             print(cut_orb)
+#             input()
+            in_cut = cut_orb
             in_cut.append(rhs)
             in_cut = [sg.Rational(el) for el in in_cut]
             cut_key = build_cut_key(in_cut)
@@ -407,7 +438,8 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
 # #     full_cut_csr = scipy.sparse.csr_matrix((full_cut_val, full_cut_idx, full_cut_start))
 #     full_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
 #                                        rhs = cut_rows_rhs, names = cut_rows_name)
-    add_to_full_model_time += time.perf_counter() - start_3
+    time_to_record_orbits = time.perf_counter() - t_5
+    print("%.2f seconds required to record orbits." % time_to_record_orbits)
     del stab_cut_orbit
     # GENERATE AGGREGATE CUTS FOR THE NEW ORBITS IN THE AGGREGATE SPACE
     cut_rows_sense = []
@@ -424,19 +456,19 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
 #     agg_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
 #                                 rhs = cut_rows_rhs, names = cut_rows_name)
     add_to_agg_model_time = time.perf_counter() - start_4
-    print("\n%.2f seconds required to generate %d cuts for full model." % (gen_cut_time, n_f_cut_added))
-    print("%.2f seconds required to generate %d cuts for aggregate model." % (gen_cut_agg_orb_time, num_row_orbits))
-    print("%.2f seconds required to add cuts to full model." % add_to_full_model_time)
+#     print("\n%.2f seconds required to generate %d cuts for full model." % (gen_cut_time, n_f_cut_added))
+#     print("%.2f seconds required to generate %d cuts for aggregate model." % (gen_cut_agg_orb_time, num_row_orbits))
     print("%.2f seconds required to add cuts to aggregate model.\n" % add_to_agg_model_time)
 #     print(new_orbits, new_cut_orbit_size, cut_rows, cut_rows_sense, cut_rows_rhs, cut_rows_name)
 #     input()
     return (new_orbits, new_cut_orbit_size, cut_rows, cut_rows_sense, cut_rows_rhs, cut_rows_name)
 
 #### Full cython lift cut function (only one cut generated) ####
-def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, node_table, full_mdl, agg_mdl):
+def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, 
+                        node_table, full_mdl, agg_mdl, cut_reps, cut_rhs, agg_cut_start):
     num_full_cut = copy.deepcopy(num_tot)
     num_full_row = copy.deepcopy(num_tot)
-    num_agg_cut = copy.deepcopy(agg_mdl.variables.get_num() + agg_mdl.linear_constraints.get_num())
+    num_agg_cut = copy.deepcopy(agg_cut_start)
     num_row_orbits = 0
     new_cut_orbit_size = {}
     new_orbits = []
@@ -469,7 +501,7 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, nod
     lift_str = build_cut_key(lifted_cut)
     # lift_str += "," + str(rhs)
     if hash_table.get(lift_str) != None:
-        return (None, None, new_orbits, new_cut_orbit_size)
+        return (new_orbits, new_cut_orbit_size, [], [], [], [])
     print("Cuts being added: %d" % 1)
     gen_cut_time = time.perf_counter() - start_1
     # LIFT THE CUTS TO THE ORIGINAL MODEL
@@ -495,8 +527,11 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, nod
 #     name += 1
 #     hash_table[lift_str] = num_full_cut
 #     node_table[num_full_cut] = lift_str
+    cut_reps[num_full_cut] = lifted_cut[:-1]
+    cut_rhs[num_full_cut] = rhs
     output = full_inner_build_vals([lifted_cut[:-1]], hash_table, node_table,
-                                  {}, rhs, num_full_row, num_full_cut, num_nz)
+                                  {}, rhs, num_full_row, num_full_cut, num_nz,
+                                  {})
     cut_rows = output[0]
     cut_rows_sense = output[1]
     cut_rows_rhs = output[2]
@@ -506,6 +541,7 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, nod
     num_full_cut += 1
     new_cut_orbit[num_row_orbits] = new_orbit[0]
     new_cut_orbit_size[num_agg_cut] = len(new_orbit)
+    cut_orbit_rep.append(lg(lifted_cut[:-1]))
     num_row_orbits += 1
     num_agg_cut += 1
     new_orbits.append(new_orbit)
@@ -538,30 +574,32 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table, nod
     print(agg_cuts_rhs)
     input()
     """
-    agg_cuts = agg_inner_build_value_dict_single(hash_table, node_orbit, 
+    cut_rows = agg_inner_build_value(hash_table, node_orbit, 
                                           orbits.col_orbit_rep, orbits.num_col_orbits, num_row_orbits, 
                                           lifted_cut, cut_orbit_rep, orbits.col_orbit, orbits.col_orbit_size)
     cut_rows_rhs = agg_inner_build_rhs(hash_table, node_orbit, 
                                        orbits.col_orbit_rep, orbits.num_col_orbits, num_row_orbits, 
                                        lifted_cut)
-    for agg_cut, vec in agg_cuts.items():
-        agg_cut_idx = []
-        agg_cut_val = []
-        for agg_col, val in vec.items():
-            agg_cut_idx.append(agg_col)
-            agg_cut_val.append(val)
-        cut_rows.append(cp.SparsePair(agg_cut_idx, agg_cut_val))
-        cut_rows_sense.append("G")
+#     for agg_cut, vec in agg_cuts.items():
+#         agg_cut_idx = []
+#         agg_cut_val = []
+#         for agg_col, val in vec.items():
+#             agg_cut_idx.append(agg_col)
+#             agg_cut_val.append(val)
+#         cut_rows.append(cp.SparsePair(agg_cut_idx, agg_cut_val))
+#         cut_rows_sense.append("G")
 #         cut_rows_rhs.append(agg_cuts_rhs.get(agg_cut)) 
         #cut_rows_name.append("C%d" % node_orb)
-    agg_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
-                                rhs = cut_rows_rhs, names = cut_rows_name)
+    for i_row in range(num_row_orbits):
+        cut_rows_sense.append("G")
+#     agg_mdl.linear_constraints.add(lin_expr = cut_rows, senses = cut_rows_sense,
+#                                 rhs = cut_rows_rhs, names = cut_rows_name)
     add_to_agg_model_time = time.perf_counter() - start_4
     print("\n%.2f seconds required to generate %d cuts for full model." % (gen_cut_time, 1))
     print("%.2f seconds required to generate %d cuts for aggregate model." % (gen_cut_agg_orb_time, num_row_orbits))
     print("%.2f seconds required to add cuts to full model." % add_to_full_model_time)
     print("%.2f seconds required to add cuts to aggregate model.\n" % add_to_agg_model_time)
-    return (new_orbits, new_cut_orbit_size)
+    return (new_orbits, new_cut_orbit_size, cut_rows, cut_rows_sense, cut_rows_rhs, cut_rows_name)
 
 #### Aggregate the A matrix to get the sum aggregate formulation #####
 def aggregate_A_mat_cy(mdl, orbits):
