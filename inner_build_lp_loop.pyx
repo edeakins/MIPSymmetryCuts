@@ -22,7 +22,7 @@ cdef str build_cut_key(list cut_orb):
 #### Inner LP build loop for cut values for full model with cuts added ####
 cdef list full_inner_build_vals(list cut_orbs, dict hash_table, dict node_table,
                                 dict cut_rhs, double rhs, int num_full_row, 
-                                int num_full_cut, int num_nz, cut_map):
+                                int num_full_cut, int num_nz, dict cut_map):
     cdef vector[int] full_cut_idx
     cdef vector[double] full_cut_val
     cdef int nz_idx = 0
@@ -36,8 +36,14 @@ cdef list full_inner_build_vals(list cut_orbs, dict hash_table, dict node_table,
     cut_rows_rhs = []
     cut_rows_name = []
     name = num_full_row
+#     print(cut_map)
+#     input()
     for i_orb in range(len(cut_orbs)):
+#         print(cut_orbs[i_orb])
+#         input()
         cut_orb = [cut_map.get(unq) for unq in cut_orbs[i_orb]]
+#         print(cut_orb)
+#         input()
         in_cut = cut_orb
         in_cut.append(rhs)
         in_cut = [sg.Rational(el) for el in in_cut]
@@ -202,6 +208,7 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
     node_orbit = {}
     agg_col_val = {}
     agg_col_idx = {}
+    cdef int col
     lifted_cut = [0 for col in orbits.col_orbit.keys()]
     # TESTING TIMERS
     gen_cut_time = 0
@@ -219,7 +226,7 @@ def lift_cut_cy_average(cut, group, first_group, orbits, num_tot, hash_table,
     cdef int num_unique = 0
     cdef double scale
     cdef int var
-    cdef int col
+    
     cdef int map_val
     unique_coeff = set()
     unique_map = {}
@@ -477,6 +484,7 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table,
     node_orbit = {}
     agg_col_val = {}
     agg_col_idx = {}
+    cdef int col
     lifted_cut = [0 for col in orbits.col_orbit.keys()]
     # TESTING TIMERS
     gen_cut_time = 0
@@ -491,13 +499,33 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table,
     start_1 = time.perf_counter()
     rhs = cut[-1]
     num_nz = 0
+    cdef int idx
+    cdef int num_unique = 0
+    cdef double scale
+    cdef int var
+    
+    cdef int map_val
+    unique_coeff = set()
+    unique_map = {}
+    coeff_map = {}
     for col, coeff in enumerate(cut[:-1]):
+        if coeff not in unique_coeff:
+            coeff_map[coeff] = num_unique
+            unique_map[num_unique] = coeff
+            unique_coeff.add(coeff)
+            num_unique += 1
         for idx in range(orbits.orbit_col_start[col], orbits.orbit_col_start[col + 1]):
+            scale = orbits.col_orbit_size[col]
             var = orbits.orbit_col[idx]
             lifted_cut[var] = coeff
             if abs(coeff - 0) > 1e-6:
                 num_nz += 1
     lifted_cut.append(rhs)
+    cdef vector[int] cut_for_gap
+    for col in range(len(orbits.col_orbit.keys())):
+        coeff = lifted_cut[col]
+        map_val = coeff_map.get(coeff)
+        cut_for_gap.push_back(sg.Integer(map_val))
     lift_str = build_cut_key(lifted_cut)
     # lift_str += "," + str(rhs)
     if hash_table.get(lift_str) != None:
@@ -529,9 +557,9 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table,
 #     node_table[num_full_cut] = lift_str
     cut_reps[num_full_cut] = lifted_cut[:-1]
     cut_rhs[num_full_cut] = rhs
-    output = full_inner_build_vals([lifted_cut[:-1]], hash_table, node_table,
-                                  {}, rhs, num_full_row, num_full_cut, num_nz,
-                                  {})
+    output = full_inner_build_vals([cut_for_gap], hash_table, node_table,
+                                  cut_rhs, rhs, num_full_row, num_full_cut, num_nz,
+                                  unique_map)
     cut_rows = output[0]
     cut_rows_sense = output[1]
     cut_rows_rhs = output[2]
@@ -541,7 +569,7 @@ def lift_cut_cy_single(cut, group, first_group, orbits, num_tot, hash_table,
     num_full_cut += 1
     new_cut_orbit[num_row_orbits] = new_orbit[0]
     new_cut_orbit_size[num_agg_cut] = len(new_orbit)
-    cut_orbit_rep.append(lg(lifted_cut[:-1]))
+    cut_orbit_rep.append(lifted_cut[:-1])
     num_row_orbits += 1
     num_agg_cut += 1
     new_orbits.append(new_orbit)
@@ -660,20 +688,23 @@ def aggregate_A_mat_cy(mdl, orbits):
 #     agg_mdl.write("agg_model_cplex.lp")
     return agg_mdl
 #### Aggregate the A mat to get the average aggregate formulation ####
-def aggregate_A_mat_average_cy(mdl, orbits):
+def aggregate_A_mat_average_cy(mdl, orbits, timer):
+    cdef int time_out = 0
     t_0 = time.perf_counter()
     t_1 = time.perf_counter()
     agg_mdl = cp.Cplex()
+    cdef int num_col_orbits
+    cdef int num_row_orbits
     num_col_orbits, num_row_orbits = orbits.get_num_orbits()
     col_orbit, row_orbit = orbits.get_orbits()
     col_orbit_rep, row_orbit_rep = orbits.get_orbit_reps()
     col_orbit_size, row_orbit_size = orbits.get_orbit_sizes()
     num_cols = len(orbits.col_orbit)
     # BUILD AGGREGATE COLUMNS
-    objs = mdl.objective.get_linear()
-    lbs = mdl.variables.get_lower_bounds()
-    ubs = mdl.variables.get_upper_bounds()
-    names = mdl.variables.get_names()
+#     objs = mdl.objective.get_linear()
+#     lbs = mdl.variables.get_lower_bounds()
+#     ubs = mdl.variables.get_upper_bounds()
+#     names = mdl.variables.get_names()
     cdef vector[double] agg_obj
     cdef vector[double] agg_lb
     cdef vector[double] agg_ub
@@ -681,6 +712,8 @@ def aggregate_A_mat_average_cy(mdl, orbits):
     cdef int i_mat
     cdef int agg_col
     cdef int i_col
+    cdef int rep
+    cdef double bound_scale
     cdef double i_val
 #     cdef vector[string] agg_type
 #     cdef vector[string] agg_name
@@ -692,32 +725,38 @@ def aggregate_A_mat_average_cy(mdl, orbits):
     for agg_col in range(num_col_orbits):
         bnd_scale = col_orbit_size[agg_col]
         rep = col_orbit_rep.get(agg_col)
-        agg_obj.push_back(objs[rep])
-        agg_lb.push_back(lbs[rep] * bnd_scale)
-        agg_ub.push_back(ubs[rep] * bnd_scale)
+        agg_obj.push_back(mdl.objective.get_linear(rep))
+        agg_lb.push_back(mdl.variables.get_lower_bounds(rep) * bnd_scale)
+        agg_ub.push_back(mdl.variables.get_upper_bounds(rep) * bnd_scale)
         agg_type.append("C")
-        agg_name.append(names[rep])
+        agg_name.append(mdl.variables.get_names(rep))
     agg_mdl.variables.add(obj = agg_obj, lb = agg_lb, ub = agg_ub, types = agg_type,
                           names = agg_name)
     print("Time to add aggregate variables: %.2f" % (time.perf_counter() - t_1))
     t_1 = time.perf_counter()
     # ADD AGGREGATE ROWS
-    rhs = mdl.linear_constraints.get_rhs()
-    names = mdl.linear_constraints.get_names()
-    sense = mdl.linear_constraints.get_senses()
+#     rhs = mdl.linear_constraints.get_rhs()
+#     names = mdl.linear_constraints.get_names()
+#     sense = mdl.linear_constraints.get_senses()
     cdef vector[double] agg_rhs
 #     agg_rhs = []
     agg_name = []
     agg_sense = []
     agg_lin_constrs = []
+    cdef vector[int] idx
+    cdef vector[double] val
     cdef vector[double] agg_values
     cdef vector[double] agg_val_sprs
     cdef vector[int] agg_idx_sprs
+    cdef int num_iter
     for agg_row in range(num_row_orbits):
+        if timer[0].get_run_time() > 7200:
+            time_out = 1
+            break
         rep = row_orbit_rep.get(agg_row)
-        agg_rhs.push_back(rhs[rep])
-        agg_sense.append(sense[rep])
-        agg_name.append(names[rep])
+        agg_rhs.push_back(mdl.linear_constraints.get_rhs(rep))
+        agg_sense.append(mdl.linear_constraints.get_senses(rep))
+        agg_name.append(mdl.linear_constraints.get_names(rep))
         idx, val = mdl.linear_constraints.get_rows(rep).unpack()
         num_iter = len(idx)
 #         cdef vector[int] agg_indices
@@ -735,10 +774,10 @@ def aggregate_A_mat_average_cy(mdl, orbits):
 #             agg_row[agg_col] += i_val/scale
             agg_values[agg_col] += i_val/scale
         for agg_col in range(num_col_orbits):
-            val = agg_values[agg_col]
-            if (abs(val - 0) < 1e-6):
+            i_val = agg_values[agg_col]
+            if (abs(i_val - 0) < 1e-6):
                 continue
-            agg_val_sprs.push_back(val)
+            agg_val_sprs.push_back(i_val)
             agg_idx_sprs.push_back(agg_col)
 #         agg_idx = list(key for key in agg_row.keys())
 #         agg_val = list(agg_row.get(key) for key in agg_row.keys())
@@ -751,4 +790,65 @@ def aggregate_A_mat_average_cy(mdl, orbits):
     build_time = time.perf_counter() - t_0
     print("Time to add aggregate constraints: %.2f" % (time.perf_counter() - t_1))
     print("Time to build aggregate model before cuts: %.2f" % build_time)
-    return agg_mdl
+    return agg_mdl, time_out
+
+def append_level_swapping_cuts(cut_orbits, agg_mdl, mdl, orbits):
+    num_col_orbits, num_row_orbits = orbits.get_num_orbits()
+    col_orbit, row_orbit = orbits.get_orbits()
+    col_orbit_rep, row_orbit_rep = orbits.get_orbit_reps()
+    col_orbit_size, row_orbit_size = orbits.get_orbit_sizes()
+    cdef int i_orb
+    cdef int rep
+    cdef int agg_col
+    cdef int i_mat
+    cdef int i_col
+    cdef double i_val
+    cdef double scale
+    rhs = mdl.linear_constraints.get_rhs()
+    names = mdl.linear_constraints.get_names()
+    sense = mdl.linear_constraints.get_senses()
+    cdef int num_col = mdl.variables.get_num()
+    cdef vector[double] agg_rhs
+    agg_name = []
+    agg_sense = []
+    agg_lin_constrs = []
+    cdef vector[double] agg_values
+    cdef vector[double] agg_val_sprs
+    cdef vector[int] agg_idx_sprs
+    for i_orb in range(len(cut_orbits)):
+        rep = cut_orbits[i_orb][0] - num_col
+        agg_rhs.push_back(rhs[rep])
+        agg_sense.append(sense[rep])
+        agg_name.append(names[rep])
+        idx, val = mdl.linear_constraints.get_rows(rep).unpack()
+        num_iter = len(idx)
+        agg_values.clear()
+        agg_values.resize(num_col_orbits)
+#         agg_row = {}
+        for i_mat in range(num_iter):
+            i_col = idx[i_mat]
+            i_val = val[i_mat]
+            agg_col = int(orbits.col_orbit.get(i_col))
+            scale = col_orbit_size[agg_col]
+#             if agg_row.get(agg_col) is None:
+#                 agg_row[agg_col] = 0
+#             agg_row[agg_col] += i_val/scale
+            agg_values[agg_col] += i_val/scale
+        for agg_col in range(num_col_orbits):
+            i_val = agg_values[agg_col]
+            if (abs(i_val - 0) < 1e-6):
+                continue
+            agg_val_sprs.push_back(i_val)
+            agg_idx_sprs.push_back(agg_col)
+#         agg_idx = list(key for key in agg_row.keys())
+#         agg_val = list(agg_row.get(key) for key in agg_row.keys())
+#         print(agg_idx_sprs)
+#         print(agg_val_sprs)
+#         input()
+        agg_lin_constrs.append(cp.SparsePair(agg_idx_sprs, agg_val_sprs))
+        agg_idx_sprs.clear()
+        agg_val_sprs.clear()
+        
+        
+    
+    
